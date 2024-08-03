@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create New Product</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mx-auto rounded border p-4 m-4">
+                <h2 class="text-center mb-5">New Product</h2>
+                <form method="post" enctype="multipart/form-data" th:object="${productDto}">
+                    <div class="row mb-3">
+                        <label class="col-sm-4 col-form-label">Name</label>
+                        <div class="col-sm-8">
+                            <input class="form-control" th:field="${productDto.name}">
+                            <p th:if="${#fields.hasErrors('name')}" th:errorclass="text-danger"
+                               th:errors="${productDto.name}" ></p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
