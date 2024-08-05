@@ -12,8 +12,16 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+import java.nio.file.*;
+
+
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class ProductController {
@@ -49,7 +57,62 @@ public class ProductController {
         if(bindingResult.hasErrors()){
             return "/products/CreateProduct";
         }
-        return "redirect:/products";
+
+        //save image file
+        MultipartFile image = productDto.getImageFile();
+        Date createdAt = new Date();
+        String storageFilleName = createdAt.getTime() + "_" + image.getOriginalFilename();
+
+        try{
+            String uploadDir = "public/images/";
+            Path uploadPath = Paths.get("uploadDir");
+
+            if(!Files.exists(uploadPath)){
+                Files.createDirectories(uploadPath);
+            }
+
+            try(InputStream inputStream = image.getInputStream()){
+                Files.copy(inputStream, Paths.get(uploadDir+storageFilleName),
+                        StandardCopyOption.REPLACE_EXISTING);
+            }
+        }catch (Exception e){
+            System.out.println("Exception: " + e.getMessage());
+        }
+
+        Product product = new Product();
+        product.setName(productDto.getName());
+        product.setDescription(productDto.getDescription());
+        product.setPrice(productDto.getPrice());
+        product.setCategory(productDto.getCategory());
+        product.setBrand(productDto.getBrand());
+        product.setCreatedAt(createdAt);
+        product.setImageFileName(storageFilleName);
+
+        productRepository.save(product);
+
+        return "redirect:/products/index";
+    }
+
+    @GetMapping("/edit")
+    public String showEditPage(Model model, @RequestParam int id) {
+        try{
+            Optional<Product> product = productRepository.findById(id);
+            model.addAttribute("product", product.get());
+
+            ProductDto productDto = new ProductDto();
+            productDto.setName(product.get().getName());
+            productDto.setDescription(product.get().getDescription());
+            productDto.setPrice(product.get().getPrice());
+            productDto.setCategory(product.get().getCategory());
+            productDto.setBrand(product.get().getBrand());
+            model.addAttribute("productDto", productDto);
+        }catch (Exception e){
+            System.out.println("Exception: " + e.getMessage());
+            return "redirect:/products";
+        }
+
+        return "/products/EditProduct";
+
     }
 
 }

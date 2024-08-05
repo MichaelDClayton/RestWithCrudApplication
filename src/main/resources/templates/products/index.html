@@ -9,7 +9,7 @@
 <body>
 <div class="contianer">
     <h1 class="text-center my-4">Products</h1>
-    <a class="btn btn-primary" href="/create">Create</a>
+    <a class="btn btn-primary" href="/create">Create Product</a>
 
     <table class="table">
         <thead>
@@ -34,9 +34,9 @@
             <td><img th:src="@{'/images/' + ${product.imageFileName}}" alt="..." width="100"></td>
             <td th:text="${product.createdAt.toString().substring(0,10)}"></td>
             <td style="white-space: nowrap">
-                <a class="btn btn-primary btn-sm" th:href="@{/templates/templates/edit(id=${product.id})}">Edit</a>
-                <a class="btn btn-danger btn-sm" th:href="@{/templates/templates/delete(id=${product.id})}"
-                onclick="return confirm('Are you sure?')">Edit</a>
+                <a class="btn btn-primary btn-sm" th:href="@{/edit(id=${product.id})}">Edit</a>
+                <a class="btn btn-danger btn-sm" th:href="@{/delete(id=${product.id})}"
+                onclick="return confirm('Are you sure?')">Delete</a>
             </td>
 
         </tr>
